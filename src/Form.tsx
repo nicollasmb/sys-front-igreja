@@ -6,20 +6,20 @@ export function Form() {
   return (
     <div>
       <Header2></Header2>
-      <div className="flex justify-center items-center h-full">
-        <div className="isolate flex flex-col justify-center items-center bg-white px-6 py-24 sm:w-full md:w-1/2 ">
-          <div className="mx-auto max-w-2xl text-left">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+      <div className="flex justify-center h-full">
+        <div className="isolate flex flex-col bg-white py-24 sm:w-full md:w-1/2 ">
+          <div className="mx-auto max-w-xl text-left md:pr-28">
+            <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-4xl">
               Dados do Noivo
             </h2>
-            <p className="mt-2 text-lg leading-8 text-gray-600">
+            <p className="mt-2 sm:text-md md:text-xl leading-8 text-gray-600">
               Preencha os dados do Noivo Abaixo
             </p>
           </div>
           <form
             action="#"
             method="POST"
-            className="mx-auto mt-16 max-w-xl sm:mt-20 rounded-md border p-8"
+            className="mx-auto mt-4 max-w-xl sm:mt-8 rounded-md border p-8"
           >
             <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-1 ">
               <InputField

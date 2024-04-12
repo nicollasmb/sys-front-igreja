@@ -14,7 +14,7 @@ export function ListBox() {
             value="option1"
           />
           <label className="block text-sm font-semibold leading-6 text-gray-900">
-            12312312
+            Batismo
           </label>
         </div>
       </div>
