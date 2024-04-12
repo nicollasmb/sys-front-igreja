@@ -19,8 +19,9 @@ export default {
       "2xl": "1536px",
       // => @media (min-width: 1536px) { ... }
     },
+
     fontFamily: {
-      sans: ["Roboto"],
+      sans: ["Poppins"],
       // Add other font families if needed
     },
   },
