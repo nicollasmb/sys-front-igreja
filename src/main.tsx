@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "./App";
-import { Form } from "./Form";
+import { FormFront } from "./Form";
 import "./index.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -13,7 +13,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/form",
-    element: <Form></Form>,
+    element: <FormFront></FormFront>,
   },
 ]);
 

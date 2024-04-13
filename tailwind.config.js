@@ -2,7 +2,11 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        marromclaro: "#998A74",
+      },
+    },
     screens: {
       sm: "300px",
       // => @media (min-width: 640px) { ... }
