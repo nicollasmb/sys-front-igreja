@@ -1,16 +1,17 @@
+import React from "react";
+import { Formik, Form, FormikHelpers } from "formik";
+import axios from "axios";
 import { InputField } from "./components/form/input-field";
 import Stepper2 from "./components/form/stepper";
 import { Header2 } from "./components/header2";
-import { Formik, Form, FormikHelpers } from "formik";
-
-import axios from "axios";
+import Selector from "./components/combo/Selector";
 
 interface Values {
-  nome: "";
-  endereco: "";
-  dataNascimento: any;
-  telefone: "";
-  comunidadeFrequenta: "";
+  nome: string;
+  endereco: string;
+  dataNascimento: string;
+  telefone: string;
+  comunidadeFrequenta: string;
 }
 
 export function FormFront() {
@@ -41,31 +42,6 @@ export function FormFront() {
     }
   };
 
-  async function testAPI() {
-    try {
-      const response = await axios({
-        method: "post",
-        url: "http://localhost:8080/pessoa",
-        data: {
-          nome: "Finn",
-          endereco: "Williams",
-          dataNascimento: new Date(),
-          telefone: "Williams",
-          sexo: "MASCULINO",
-          religiao: "CATOLICO",
-          sacramento: "BATISMO",
-          lastName: "Williams",
-          comunidadeFrequenta: "mato branco",
-        },
-      });
-
-      console.log("Response:", response.data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }
-
-  testAPI();
   return (
     <div>
       <Header2 />
@@ -125,12 +101,8 @@ export function FormFront() {
                     type="text"
                     placeholder="Endereço"
                   />
-                  <InputField
-                    label="Paróquia/Comunidade que frequenta"
-                    id="comunidadeFrequenta"
-                    name="comunidadeFrequenta"
-                    type="text"
-                    placeholder="Nome da Paróquia/Comunidade"
+                  <Selector 
+                
                   />
                 </div>
                 <div className="mt-8 w-full md:w-1/3">
