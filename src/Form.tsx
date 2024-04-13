@@ -80,7 +80,7 @@ export function FormFront() {
               <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-2">
                 Dados do Noivo
               </h2>
-              <p className="mt-2 font-light sm:text-md md:text-md leading-8 text-gray-600">
+              <p className="mt-2 font-light sm:text-md md:text-md leading-8 text-gray-600 mb-4">
                 Preencha os dados do Noivo Abaixo
               </p>
             </div>
@@ -96,7 +96,7 @@ export function FormFront() {
               onSubmit={handleSubmit}
             >
               <Form>
-                <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-1">
+                <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-1 border border-gray-300 rounded-md p-8">
                   <InputField
                     label="Nome Completo"
                     id="nome"
@@ -138,7 +138,7 @@ export function FormFront() {
                     type="submit"
                     className="block w-full rounded-md bg-marromclaro px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   >
-                    Dados da Noiva
+                    Avançar
                   </button>
                 </div>
               </Form>
