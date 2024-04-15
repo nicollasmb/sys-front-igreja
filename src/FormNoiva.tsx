@@ -151,7 +151,7 @@ export function FormNoiva() {
                     />
                   </div>
                 </div>
-                <div className="mt-8 sm:mt-14 w-full md:w-1/3">
+                <div className="mt-8 sm:mt-8 w-full md:w-1/3 ml-auto">
                   <button
                     type="submit"
                     className="block w-full rounded-md bg-marromclaro px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
