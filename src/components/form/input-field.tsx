@@ -25,7 +25,7 @@ export function InputField({
       </label>
       <div className="mt-2.5">
         <Field name={name}>
-          {({ field, form }: FieldProps) => (
+          {({ field }: FieldProps) => (
             <input
               {...field}
               {...props}

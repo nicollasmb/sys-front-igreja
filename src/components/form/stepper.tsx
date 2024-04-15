@@ -20,10 +20,7 @@ const Stepper2: React.FC<StepperProps> = ({ numberOfSteps, currentPage }) => {
     <div className="flex items-center rotate-180">
       {Array.from({ length: numberOfSteps }).map((_, index) => (
         <React.Fragment key={index}>
-          <div
-            className={`w-4 h-4 rounded-full ${activeColor(index)}`}
-            onClick={() => handleStepClick(index)}
-          ></div>
+          <div className={`w-4 h-4 rounded-full ${activeColor(index)}`}></div>
           {isFinalStep(index) ? null : (
             <div className={`w-12 h-1 ${activeColor(index)}`}></div>
           )}

@@ -1,10 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "./App";
-import { FormFront } from "./Form";
+import { FormNoiva } from "./FormNoiva";
 import "./index.css";
-
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { FormNoivo } from "./FormNoivo";
+import { FormCasal } from "./FormCasal";
 
 const router = createBrowserRouter([
   {
@@ -12,8 +13,16 @@ const router = createBrowserRouter([
     element: <App></App>,
   },
   {
-    path: "/form",
-    element: <FormFront></FormFront>,
+    path: "/formularioCursoDeNoivos/Noivo",
+    element: <FormNoivo></FormNoivo>,
+  },
+  {
+    path: "/formularioCursoDeNoivos/Noiva",
+    element: <FormNoiva></FormNoiva>,
+  },
+  {
+    path: "/formularioCursoDeNoivos/Casal",
+    element: <FormCasal></FormCasal>,
   },
 ]);
 
