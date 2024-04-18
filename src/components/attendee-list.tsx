@@ -5,6 +5,7 @@ import {
   ChevronsRight,
   MoreHorizontal,
   Search,
+  Folder,
 } from "lucide-react";
 import { IconButton } from "./icon-button";
 import { Table } from "./table/table";
@@ -20,12 +21,22 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 dayjs.locale("pt-br");
 
-interface Attendee {
-  id: string;
-  name: string;
-  email: string;
-  createdAt: string;
-  checkedInAt: string | null;
+interface CasalData {
+  id: number;
+  nomeNoiva: string;
+  enderecoNoiva: string;
+  dataNascimentoNoiva: string;
+  telefoneNoiva: string;
+  comunidadeNoiva: string;
+  religiaoNoiva: string;
+  sacramentoNoiva: string;
+  nomeNoivo?: string;
+  enderecoNoivo?: string;
+  dataNascimentoNoivo?: string;
+  telefoneNoivo?: string;
+  comunidadeNoivo?: string;
+  religiaoNoivo?: string;
+  sacramentoNoivo?: string;
 }
 
 export function AttendeeList() {
@@ -50,14 +61,14 @@ export function AttendeeList() {
 
   const [total, setTotal] = useState(0);
 
-  const [attendees, setAttendees] = useState<Attendee[]>([]);
+  const [casal, setCasal] = useState<CasalData[]>([]);
 
   const totalPages = Math.ceil(total / 10);
 
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+
   useEffect(() => {
-    const url = new URL(
-      "http://localhost:3334/events/9e9bd979-9d10-4915-b339-3786b1634f33/attendees"
-    );
+    const url = new URL("http://localhost:8080/dados_casal");
     url.searchParams.set("pageIndex", String(page - 1));
 
     if (search.length > 0) {
@@ -68,8 +79,34 @@ export function AttendeeList() {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        setAttendees(data.attendees);
-        setTotal(data.total);
+        const filteredData = data.filter((casalData: any) => {
+          // Check if either the noiva or noivo name matches the search term
+          return (
+            casalData.noiva.nome.toLowerCase().includes(search.toLowerCase()) ||
+            (casalData.noivo &&
+              casalData.noivo.nome.toLowerCase().includes(search.toLowerCase()))
+          );
+        });
+        setCasal(
+          filteredData.map((casalData: any) => ({
+            id: casalData.casalId,
+            nomeNoiva: casalData.noiva.nome, // Accessing noiva's nome
+            enderecoNoiva: casalData.noiva.endereco, // Accessing noiva's endereco
+            dataNascimentoNoiva: casalData.noiva.dataNascimento, // Accessing noiva's dataNascimento
+            telefoneNoiva: casalData.noiva.telefone, // Accessing noiva's telefone
+            comunidadeNoiva: casalData.noiva.comunidadeFrequenta, // Accessing noiva's comunidadeFrequenta
+            religiaoNoiva: casalData.noiva.religiao, // Accessing noiva's religiao
+            sacramentoNoiva: casalData.noiva.sacramento, // Accessing noiva's sacramento
+            nomeNoivo: casalData.noivo.nome, // Accessing noivo's nome
+            enderecoNoivo: casalData.noivo.endereco, // Accessing noivo's endereco
+            dataNascimentoNoivo: casalData.noivo.dataNascimento, // Accessing noivo's dataNascimento
+            telefoneNoivo: casalData.noivo.telefone, // Accessing noivo's telefone
+            comunidadeNoivo: casalData.noivo.comunidadeFrequenta, // Accessing noivo's comunidadeFrequenta
+            religiaoNoivo: casalData.noivo.religiao, // Accessing noivo's religiao
+            sacramentoNoivo: casalData.noivo.sacramento, // Accessing noivo's sacramento
+          }))
+        );
+        setTotal(filteredData.length);
       });
   }, [page, search]);
 
@@ -89,6 +126,7 @@ export function AttendeeList() {
   function onSearchInputChanged(event: ChangeEvent<HTMLInputElement>) {
     setCurrentSearch(event.target.value);
     setCurrentPage(1);
+    console.log(search);
   }
 
   function goToFirstPage() {
@@ -106,112 +144,149 @@ export function AttendeeList() {
   function goToNextPage() {
     setCurrentPage(page + 1);
   }
+
+  function handleCheckboxChange(id: number) {
+    if (selectedRows.includes(id)) {
+      setSelectedRows(selectedRows.filter((rowId) => rowId !== id));
+    } else {
+      setSelectedRows([...selectedRows, id]);
+    }
+  }
+
+  function handleAllCheckboxes(event: ChangeEvent<HTMLInputElement>) {
+    const isChecked = event.target.checked;
+    const updatedSelectedRows = isChecked
+      ? casal.map((casalData) => casalData.id)
+      : [];
+    setSelectedRows(updatedSelectedRows);
+  }
+
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex gap-3 items-center">
-        <h1 className="text-2xl font-bold">Participantes</h1>
-        <div className="px-3 w-72 py-1.5 border border-white/10 rounded-lg flex items-center gap-3">
-          <Search className="size-4 text-emerald-300" />
+    <div className="flex flex-col gap-4 overflow-x-auto">
+      <div className="flex gap-6 items-center">
+        <h1 className="text-2xl font-bold text-gray-900">Casais</h1>
+        <div className="px-3 w-72 py-1.5 border border-gray-400 rounded-lg flex items-center gap-3">
+          <Search className="size-4 text-gray-500" />
           <input
             className="focus:ring-0 bg-transparent flex-1 outline-none border-0 p-0 text-sm"
-            placeholder="Buscar participante..."
+            placeholder="Buscar Casal..."
             onChange={onSearchInputChanged}
           />
         </div>
       </div>
 
-      <Table>
-        <thead>
-          <tr className="border-b border-white/10">
-            <TableHeader style={{ width: 48 }}>
-              <input
-                type="checkbox"
-                className="size-4 bg-black/20 rounded border border-white/10"
-              />
-            </TableHeader>
+      <div className="max-w-full overflow-x-auto rounded-lg shadow-md">
+        <Table>
+          <thead>
+            <tr className="border-b border-gray-600">
+              <TableHeader style={{ width: 48 }}>
+                <input
+                  type="checkbox"
+                  className="size-4 bg-black/20 rounded border border-white/10"
+                  onChange={handleAllCheckboxes}
+                />
+              </TableHeader>
 
-            <TableHeader>Código</TableHeader>
-            <TableHeader>Participante</TableHeader>
-            <TableHeader>Data de inscrição</TableHeader>
-            <TableHeader>Data do check-in</TableHeader>
-            <TableHeader style={{ width: 64 }}></TableHeader>
-          </tr>
-        </thead>
-        <tbody>
-          {attendees.map((ateendee) => {
-            return (
-              <TableRow key={ateendee.id}>
-                <TableCell>
-                  <input
-                    type="checkbox"
-                    className="size-4 bg-black/20 rounded border border-white/10"
-                  />
-                </TableCell>
-                <TableCell>{ateendee.id}</TableCell>
-                <TableCell>
-                  <div className="flex flex-col gap-1">
-                    <span className="font-semibold text-white">
-                      {ateendee.name}
-                    </span>
-                    <span>{ateendee.email}</span>
-                  </div>
-                </TableCell>
-                <TableCell>{dayjs().to(ateendee.createdAt)}</TableCell>
-                <TableCell>
-                  {ateendee.checkedInAt === null ? (
-                    <span className="text-zinc-400">Não fez check-in</span>
-                  ) : (
-                    dayjs().to(ateendee.checkedInAt)
-                  )}
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    transparent
-                    className="bg-black/20 border border-white/10 rounded-md p-1.5"
-                  >
-                    <MoreHorizontal className="size-4" />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </tbody>
-        <tfoot>
-          <tr>
-            <TableCell colSpan={3}>
-              Mostrando {attendees.length} de {total} itens
-            </TableCell>
-            <TableCell className="text-right" colSpan={3}>
-              <div className="inline-flex items-center gap-8">
-                <span>
-                  Página {page} de {totalPages}
-                </span>
+              <TableHeader>Noivo</TableHeader>
+              <TableHeader>Telefone</TableHeader>
+              <TableHeader>Endereço</TableHeader>
+              <TableHeader>Noiva</TableHeader>
+              <TableHeader>Telefone</TableHeader>
+              <TableHeader>Endereço</TableHeader>
+              <TableHeader>Status</TableHeader>
 
-                <div className="flex gap-1.5">
-                  <IconButton onClick={goToFirstPage} disabled={page === 1}>
-                    <ChevronsLeft className="size-4" />
-                  </IconButton>
-                  <IconButton onClick={goToPreviousPage} disabled={page === 1}>
-                    <ChevronLeft className="size-4" />
-                  </IconButton>
-                  <IconButton
-                    onClick={goToNextPage}
-                    disabled={page === totalPages}
-                  >
-                    <ChevronRight className="size-4" />
-                  </IconButton>
-                  <IconButton
-                    onClick={goToLastPage}
-                    disabled={page === totalPages}
-                  >
-                    <ChevronsRight className="size-4" />
-                  </IconButton>
-                </div>
+              <TableHeader style={{ width: 64 }}></TableHeader>
+            </tr>
+          </thead>
+          <tbody>
+            {casal.map((casalData) => {
+              const isChecked = selectedRows.includes(casalData.id);
+              const rowClassName = isChecked
+                ? "bg-marromclaro/20"
+                : "bg-white hover:bg-gray-100";
+              return (
+                <TableRow
+                  key={casalData.id}
+                  className={rowClassName}
+                  onClick={() => handleCheckboxChange(casalData.id)}
+                >
+                  <TableCell>
+                    <input
+                      type="checkbox"
+                      className="size-4 bg-black/20 rounded border border-white/10"
+                      checked={isChecked}
+                      onClick={() => handleCheckboxChange(casalData.id)}
+                    />
+                  </TableCell>
+                  <TableCell>{casalData.nomeNoivo}</TableCell>
+                  <TableCell>{casalData.telefoneNoivo}</TableCell>
+                  <TableCell>{casalData.enderecoNoivo}</TableCell>
+                  <TableCell>{casalData.nomeNoiva}</TableCell>
+                  <TableCell>{casalData.telefoneNoiva}</TableCell>
+                  <TableCell>{casalData.enderecoNoiva}</TableCell>
+
+                  {/* <TableCell>
+                    {casalData.sexo === "FEMININO" ? (
+                      <span className="text-gray-400">Feminino</span>
+                    ) : (
+                      <span className="text-gray-400">Masculino</span>
+                    )}
+                  </TableCell> */}
+                  <TableCell className="flex flex-row gap-2">
+                    <IconButton
+                      transparent
+                      className="bg-black/20 border border-white/10 rounded-md p-1.5"
+                    >
+                      <Folder className="size-4" />
+                    </IconButton>
+                    <IconButton
+                      transparent
+                      className="bg-black/20 border border-white/10 rounded-md p-1.5"
+                    >
+                      <MoreHorizontal className="size-4" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </tbody>
+        </Table>
+      </div>
+      <tfoot>
+        <tr>
+          <TableCell colSpan={3}>
+            Mostrando {casal.length} de {total} itens
+          </TableCell>
+          <TableCell className="text-right" colSpan={3}>
+            <div className="inline-flex items-center gap-8">
+              <span>
+                Página {page} de {totalPages}
+              </span>
+
+              <div className="flex gap-1.5">
+                <IconButton onClick={goToFirstPage}>
+                  <ChevronsLeft className="size-4" />
+                </IconButton>
+                <IconButton onClick={goToPreviousPage} disabled={page === 1}>
+                  <ChevronLeft className="size-4" />
+                </IconButton>
+                <IconButton
+                  onClick={goToNextPage}
+                  disabled={page === totalPages}
+                >
+                  <ChevronRight className="size-4" />
+                </IconButton>
+                <IconButton
+                  onClick={goToLastPage}
+                  disabled={page === totalPages}
+                >
+                  <ChevronsRight className="size-4" />
+                </IconButton>
               </div>
-            </TableCell>
-          </tr>
-        </tfoot>
-      </Table>
+            </div>
+          </TableCell>
+        </tr>
+      </tfoot>
     </div>
   );
 }
