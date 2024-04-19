@@ -7,7 +7,7 @@ export function Header() {
       <img src={logo} alt="NLW Unite" className="h-14 pl-5 pt-1 w-auto" />
 
       <nav className="flex items-center gap-5">
-        <NavLink href="/eventos">Eventos</NavLink>
+        <NavLink href="/formularioCursoDeNoivos/Noiva">Eventos</NavLink>
         <NavLink href="/participantes">Participantes</NavLink>
       </nav>
     </div>

@@ -6,7 +6,7 @@ export function App() {
     <div>
       <Header />
 
-      <div className="max-w-[1216px] mx-auto py-5 flex flex-col gap-5">
+      <div className="max-w-[1112px] mx-auto py-5 flex flex-col gap-5">
         <AttendeeList />
       </div>
     </div>

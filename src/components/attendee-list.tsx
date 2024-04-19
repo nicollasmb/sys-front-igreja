@@ -18,6 +18,8 @@ import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import relativeTime from "dayjs/plugin/relativeTime";
 
+import axios from "axios";
+
 dayjs.extend(relativeTime);
 dayjs.locale("pt-br");
 
@@ -39,6 +41,11 @@ interface CasalData {
   sacramentoNoivo?: string;
 }
 
+const headers = {
+  Authorization:
+    "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZSIsImlzcyI6ImlncmVqYUJhY2siLCJleHAiOjE3MTM0OTE2Nzl9.hyhHPSuXYex9_Ho2U4yhpzXbAbvVReArCvd59U3hvlk",
+};
+
 export function AttendeeList() {
   const [search, setSearch] = useState(() => {
     const url = new URL(window.location.toString());
@@ -58,63 +65,148 @@ export function AttendeeList() {
 
     return 1;
   });
+  const [size, setSize] = useState(() => {
+    const url = new URL(window.location.toString());
+
+    if (url.searchParams.has("size")) {
+      return Number(url.searchParams.get("size"));
+    }
+
+    return 1;
+  });
 
   const [total, setTotal] = useState(0);
 
   const [casal, setCasal] = useState<CasalData[]>([]);
 
-  const totalPages = Math.ceil(total / 10);
+  const totalPages = Math.ceil(total / size);
 
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
   useEffect(() => {
-    const url = new URL("http://localhost:8080/dados_casal");
-    url.searchParams.set("pageIndex", String(page - 1));
+    const fetchData = async () => {
+      try {
+        const url = new URL("http://localhost:8080/dados_casal");
 
-    if (search.length > 0) {
-      url.searchParams.set("query", search);
-    }
+        // Set search parameters
+        url.searchParams.set("size", size.toString());
+        url.searchParams.set("page", page.toString());
 
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        const filteredData = data.filter((casalData: any) => {
-          // Check if either the noiva or noivo name matches the search term
-          return (
-            casalData.noiva.nome.toLowerCase().includes(search.toLowerCase()) ||
-            (casalData.noivo &&
-              casalData.noivo.nome.toLowerCase().includes(search.toLowerCase()))
-          );
+        // Add search parameter if it exists
+        if (search.length > 0) {
+          url.searchParams.set("query", search);
+        }
+
+        const response = await axios.get<any>(url.toString(), {
+          headers: {
+            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZSIsImlzcyI6ImlncmVqYUJhY2siLCJleHAiOjE3MTM1NjczNTV9.G0Gk8pffWtbmTFk44FYslSmTf54c_dW-OwNQOgxlx0A`,
+          },
         });
-        setCasal(
-          filteredData.map((casalData: any) => ({
+
+        if (response.data.content && response.data.content.length > 0) {
+          const filteredData = response.data.content.filter(
+            (casalData: any) => {
+              return (
+                casalData.noiva.nome
+                  .toLowerCase()
+                  .includes(search.toLowerCase()) ||
+                (casalData.noivo &&
+                  casalData.noivo.nome
+                    .toLowerCase()
+                    .includes(search.toLowerCase()))
+              );
+            }
+          );
+
+          const formattedData = filteredData.map((casalData: any) => ({
             id: casalData.casalId,
-            nomeNoiva: casalData.noiva.nome, // Accessing noiva's nome
-            enderecoNoiva: casalData.noiva.endereco, // Accessing noiva's endereco
-            dataNascimentoNoiva: casalData.noiva.dataNascimento, // Accessing noiva's dataNascimento
-            telefoneNoiva: casalData.noiva.telefone, // Accessing noiva's telefone
-            comunidadeNoiva: casalData.noiva.comunidadeFrequenta, // Accessing noiva's comunidadeFrequenta
-            religiaoNoiva: casalData.noiva.religiao, // Accessing noiva's religiao
-            sacramentoNoiva: casalData.noiva.sacramento, // Accessing noiva's sacramento
-            nomeNoivo: casalData.noivo.nome, // Accessing noivo's nome
-            enderecoNoivo: casalData.noivo.endereco, // Accessing noivo's endereco
-            dataNascimentoNoivo: casalData.noivo.dataNascimento, // Accessing noivo's dataNascimento
-            telefoneNoivo: casalData.noivo.telefone, // Accessing noivo's telefone
-            comunidadeNoivo: casalData.noivo.comunidadeFrequenta, // Accessing noivo's comunidadeFrequenta
-            religiaoNoivo: casalData.noivo.religiao, // Accessing noivo's religiao
-            sacramentoNoivo: casalData.noivo.sacramento, // Accessing noivo's sacramento
-          }))
-        );
-        setTotal(filteredData.length);
-      });
-  }, [page, search]);
+            nomeNoiva: casalData.noiva.nome,
+            enderecoNoiva: casalData.noiva.endereco,
+            dataNascimentoNoiva: casalData.noiva.dataNascimento,
+            telefoneNoiva: casalData.noiva.telefone,
+            comunidadeNoiva: casalData.noiva.comunidadeFrequenta,
+            religiaoNoiva: casalData.noiva.religiao,
+            sacramentoNoiva: casalData.noiva.sacramento,
+            nomeNoivo: casalData.noivo.nome,
+            enderecoNoivo: casalData.noivo.endereco,
+            dataNascimentoNoivo: casalData.noivo.dataNascimento,
+            telefoneNoivo: casalData.noivo.telefone,
+            comunidadeNoivo: casalData.noivo.comunidadeFrequenta,
+            religiaoNoivo: casalData.noivo.religiao,
+            sacramentoNoivo: casalData.noivo.sacramento,
+          }));
+
+          setCasal(formattedData);
+          setTotal(formattedData.length);
+        } else {
+          console.log("No content found in the response.");
+        }
+
+        console.log(response.data.content); // Log the content array
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, [search, size]);
+
+  // useEffect(() => {
+  //   const url = new URL("http://localhost:8080/dados_casal/?size=1&page=1"); // Set the page parameter
+  //   console.log(url);
+
+  //   fetch(url, {
+  //     headers: {
+  //       Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZSIsImlzcyI6ImlncmVqYUJhY2siLCJleHAiOjE3MTM1NjczNTV9.G0Gk8pffWtbmTFk44FYslSmTf54c_dW-OwNQOgxlx0A`,
+  //       "Content-Type": "application/pdf", // You may adjust the content type as per your API requirements
+  //     },
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log(data);
+  //       const filteredData = data.filter((casalData: any) => {
+  //         // Check if either the noiva or noivo name matches the search term
+  //         return (
+  //           casalData.noiva.nome.toLowerCase().includes(search.toLowerCase()) ||
+  //           (casalData.noivo &&
+  //             casalData.noivo.nome.toLowerCase().includes(search.toLowerCase()))
+  //         );
+  //       });
+  //       setCasal(
+  //         filteredData.push((casalData: any) => ({
+  //           id: casalData.casalId,
+  //           nomeNoiva: casalData.noiva.nome, // Accessing noiva's nome
+  //           enderecoNoiva: casalData.noiva.endereco, // Accessing noiva's endereco
+  //           dataNascimentoNoiva: casalData.noiva.dataNascimento, // Accessing noiva's dataNascimento
+  //           telefoneNoiva: casalData.noiva.telefone, // Accessing noiva's telefone
+  //           comunidadeNoiva: casalData.noiva.comunidadeFrequenta, // Accessing noiva's comunidadeFrequenta
+  //           religiaoNoiva: casalData.noiva.religiao, // Accessing noiva's religiao
+  //           sacramentoNoiva: casalData.noiva.sacramento, // Accessing noiva's sacramento
+  //           nomeNoivo: casalData.noivo.nome, // Accessing noivo's nome
+  //           enderecoNoivo: casalData.noivo.endereco, // Accessing noivo's endereco
+  //           dataNascimentoNoivo: casalData.noivo.dataNascimento, // Accessing noivo's dataNascimento
+  //           telefoneNoivo: casalData.noivo.telefone, // Accessing noivo's telefone
+  //           comunidadeNoivo: casalData.noivo.comunidadeFrequenta, // Accessing noivo's comunidadeFrequenta
+  //           religiaoNoivo: casalData.noivo.religiao, // Accessing noivo's religiao
+  //           sacramentoNoivo: casalData.noivo.sacramento, // Accessing noivo's sacramento
+  //         }))
+  //       );
+  //       setTotal(filteredData.length);
+  //     });
+  // }, [page, search]);
 
   function setCurrentPage(page: number) {
     const url = new URL(window.location.toString());
     url.searchParams.set("page", String(page));
     window.history.pushState({}, "", url);
     setPage(page);
+  }
+
+  function setCurrentSize(size: number) {
+    const url = new URL(window.location.toString());
+    url.searchParams.set("size", String(size));
+    window.history.pushState({}, "", url);
+    setSize(size);
   }
 
   function setCurrentSearch(search: string) {
@@ -131,6 +223,7 @@ export function AttendeeList() {
 
   function goToFirstPage() {
     setCurrentPage(1);
+    setCurrentSize(2);
   }
 
   function goToLastPage() {
@@ -161,9 +254,54 @@ export function AttendeeList() {
     setSelectedRows(updatedSelectedRows);
   }
 
+  function getPdf(casalId: number) {
+    axios
+      .get(`http://localhost:8080/dados_casal/pdf/${casalId}`, {
+        responseType: "blob",
+        headers,
+      })
+      .then((response) => {
+        // Create a Blob from the PDF data
+        const blob = new Blob([response.data], { type: "application/pdf" });
+
+        // Create a URL object representing the PDF blob
+        const pdfUrl = URL.createObjectURL(blob);
+
+        // Create a temporary link element (<a>) to trigger the download
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "document.pdf"; // Set the filename for the downloaded PDF
+        document.body.appendChild(link);
+
+        // Trigger a click event on the link to initiate the download
+        link.click();
+
+        // Cleanup: Remove the temporary link and revoke the URL object
+        document.body.removeChild(link);
+        URL.revokeObjectURL(pdfUrl);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
+  function getPdf2() {
+    axios
+      .get(`http://localhost:8080/dados_casal/pdf`, {
+        responseType: "blob",
+        headers,
+      })
+      .then((response) => {
+        console.log("Response:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
   return (
     <div className="flex flex-col gap-4 overflow-x-auto">
-      <div className="flex gap-6 items-center">
+      <div className="flex gap-6 items-center space place-content-around">
         <h1 className="text-2xl font-bold text-gray-900">Casais</h1>
         <div className="px-3 w-72 py-1.5 border border-gray-400 rounded-lg flex items-center gap-3">
           <Search className="size-4 text-gray-500" />
@@ -225,23 +363,25 @@ export function AttendeeList() {
                   <TableCell>{casalData.telefoneNoiva}</TableCell>
                   <TableCell>{casalData.enderecoNoiva}</TableCell>
 
-                  {/* <TableCell>
+                  <TableCell>
                     {casalData.sexo === "FEMININO" ? (
                       <span className="text-gray-400">Feminino</span>
                     ) : (
                       <span className="text-gray-400">Masculino</span>
                     )}
-                  </TableCell> */}
+                  </TableCell>
                   <TableCell className="flex flex-row gap-2">
                     <IconButton
                       transparent
                       className="bg-black/20 border border-white/10 rounded-md p-1.5"
+                      onClick={() => getPdf(casalData.id)}
                     >
                       <Folder className="size-4" />
                     </IconButton>
                     <IconButton
                       transparent
                       className="bg-black/20 border border-white/10 rounded-md p-1.5"
+                      onClick={getPdf2}
                     >
                       <MoreHorizontal className="size-4" />
                     </IconButton>
@@ -252,7 +392,7 @@ export function AttendeeList() {
           </tbody>
         </Table>
       </div>
-      <tfoot>
+      <tfoot className="flex ml-auto">
         <tr>
           <TableCell colSpan={3}>
             Mostrando {casal.length} de {total} itens
@@ -267,7 +407,8 @@ export function AttendeeList() {
                 <IconButton onClick={goToFirstPage}>
                   <ChevronsLeft className="size-4" />
                 </IconButton>
-                <IconButton onClick={goToPreviousPage} disabled={page === 1}>
+                <IconButton onClick={goToPreviousPage}>
+                  {/* <IconButton onClick={goToPreviousPage} disabled={page === 1}></IconButton> */}
                   <ChevronLeft className="size-4" />
                 </IconButton>
                 <IconButton

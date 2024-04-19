@@ -6,6 +6,8 @@ interface InputFieldProps extends ComponentProps<"input"> {
   name: string;
   span?: number;
   placeholder?: string;
+  minLength?: number;
+  maxLength?: number;
 }
 
 export function InputField({
@@ -13,6 +15,9 @@ export function InputField({
   name,
   span,
   placeholder,
+  minLength,
+  maxLength,
+
   ...props
 }: InputFieldProps) {
   return (
@@ -34,6 +39,8 @@ export function InputField({
               className="block w-full border-r-0 border-l-0 border-t-0 border-1 transition duration-300
                hover:border-gray-950 hover:bg-slate-50 border-transparent focus:border-gray-950 
                focus:ring-0 border-gray-300 py-2 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6"
+              minLength={minLength}
+              maxLength={maxLength}
             />
           )}
         </Field>

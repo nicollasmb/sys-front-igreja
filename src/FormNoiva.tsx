@@ -1,10 +1,12 @@
-import { Formik, Form, FormikHelpers } from "formik";
+import { Formik, Form, FormikHelpers, ErrorMessage } from "formik";
 import axios from "axios";
 import { InputField } from "./components/form/input-field";
 import Stepper2 from "./components/form/stepper";
 import { Header2 } from "./components/header2";
 import SelectField from "./components/combo/selector";
 import { useNavigate, useLocation } from "react-router-dom";
+
+import * as Yup from "yup";
 
 interface Values {
   sexo: string;
@@ -69,6 +71,10 @@ export function FormNoiva() {
     }
   };
 
+  const validationSchema = Yup.object().shape({
+    nome: Yup.string().required("Campo obrigatório"),
+  });
+
   return (
     <div>
       <Header2 />
@@ -99,6 +105,7 @@ export function FormNoiva() {
                 religiao: "",
                 sacramento: "",
               }}
+              validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
               <Form>
@@ -110,18 +117,28 @@ export function FormNoiva() {
                     type="text"
                     placeholder="Nome Completo"
                   />
+                  <ErrorMessage
+                    name="nome"
+                    component="a"
+                    className="error text-sm text-red-700 -mt-6"
+                  />
                   <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
                     <InputField
                       label="Data de Nascimento"
                       id="dataNascimento"
                       name="dataNascimento"
                       type="date"
+                      min="1930-01-01"
+                      max="2024-04-30"
                     />
                     <InputField
                       label="Telefone"
                       id="telefone"
                       name="telefone"
                       type="tel"
+                      placeholder="(42) 99999-9999"
+                      minLength={8}
+                      maxLength={11}
                     />
                   </div>
                   <InputField
