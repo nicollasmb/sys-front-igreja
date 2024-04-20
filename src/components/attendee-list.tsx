@@ -42,8 +42,7 @@ interface CasalData {
 }
 
 const headers = {
-  Authorization:
-    "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZSIsImlzcyI6ImlncmVqYUJhY2siLCJleHAiOjE3MTM0OTE2Nzl9.hyhHPSuXYex9_Ho2U4yhpzXbAbvVReArCvd59U3hvlk",
+  Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZSIsImlzcyI6ImlncmVqYUJhY2siLCJleHAiOjE3MTM1ODE0NjN9.8XLXC2Iy_RPcy-NRRxwNV_hyec9TvwkmZusNZvf73_E  `,
 };
 
 export function AttendeeList() {
@@ -79,7 +78,7 @@ export function AttendeeList() {
 
   const [casal, setCasal] = useState<CasalData[]>([]);
 
-  const totalPages = Math.ceil(total / size);
+  const totalPages = Math.ceil(total / 9);
 
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
@@ -89,17 +88,11 @@ export function AttendeeList() {
         const url = new URL("http://localhost:8080/dados_casal");
 
         // Set search parameters
-        url.searchParams.set("size", size.toString());
         url.searchParams.set("page", page.toString());
-
-        // Add search parameter if it exists
-        if (search.length > 0) {
-          url.searchParams.set("query", search);
-        }
 
         const response = await axios.get<any>(url.toString(), {
           headers: {
-            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZSIsImlzcyI6ImlncmVqYUJhY2siLCJleHAiOjE3MTM1NjczNTV9.G0Gk8pffWtbmTFk44FYslSmTf54c_dW-OwNQOgxlx0A`,
+            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZSIsImlzcyI6ImlncmVqYUJhY2siLCJleHAiOjE3MTM1ODE0NjN9.8XLXC2Iy_RPcy-NRRxwNV_hyec9TvwkmZusNZvf73_E  `,
           },
         });
 
@@ -137,7 +130,7 @@ export function AttendeeList() {
           }));
 
           setCasal(formattedData);
-          setTotal(formattedData.length);
+          setTotal(response.data.totalElements);
         } else {
           console.log("No content found in the response.");
         }
@@ -149,64 +142,13 @@ export function AttendeeList() {
     };
 
     fetchData();
-  }, [search, size]);
-
-  // useEffect(() => {
-  //   const url = new URL("http://localhost:8080/dados_casal/?size=1&page=1"); // Set the page parameter
-  //   console.log(url);
-
-  //   fetch(url, {
-  //     headers: {
-  //       Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZSIsImlzcyI6ImlncmVqYUJhY2siLCJleHAiOjE3MTM1NjczNTV9.G0Gk8pffWtbmTFk44FYslSmTf54c_dW-OwNQOgxlx0A`,
-  //       "Content-Type": "application/pdf", // You may adjust the content type as per your API requirements
-  //     },
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //       const filteredData = data.filter((casalData: any) => {
-  //         // Check if either the noiva or noivo name matches the search term
-  //         return (
-  //           casalData.noiva.nome.toLowerCase().includes(search.toLowerCase()) ||
-  //           (casalData.noivo &&
-  //             casalData.noivo.nome.toLowerCase().includes(search.toLowerCase()))
-  //         );
-  //       });
-  //       setCasal(
-  //         filteredData.push((casalData: any) => ({
-  //           id: casalData.casalId,
-  //           nomeNoiva: casalData.noiva.nome, // Accessing noiva's nome
-  //           enderecoNoiva: casalData.noiva.endereco, // Accessing noiva's endereco
-  //           dataNascimentoNoiva: casalData.noiva.dataNascimento, // Accessing noiva's dataNascimento
-  //           telefoneNoiva: casalData.noiva.telefone, // Accessing noiva's telefone
-  //           comunidadeNoiva: casalData.noiva.comunidadeFrequenta, // Accessing noiva's comunidadeFrequenta
-  //           religiaoNoiva: casalData.noiva.religiao, // Accessing noiva's religiao
-  //           sacramentoNoiva: casalData.noiva.sacramento, // Accessing noiva's sacramento
-  //           nomeNoivo: casalData.noivo.nome, // Accessing noivo's nome
-  //           enderecoNoivo: casalData.noivo.endereco, // Accessing noivo's endereco
-  //           dataNascimentoNoivo: casalData.noivo.dataNascimento, // Accessing noivo's dataNascimento
-  //           telefoneNoivo: casalData.noivo.telefone, // Accessing noivo's telefone
-  //           comunidadeNoivo: casalData.noivo.comunidadeFrequenta, // Accessing noivo's comunidadeFrequenta
-  //           religiaoNoivo: casalData.noivo.religiao, // Accessing noivo's religiao
-  //           sacramentoNoivo: casalData.noivo.sacramento, // Accessing noivo's sacramento
-  //         }))
-  //       );
-  //       setTotal(filteredData.length);
-  //     });
-  // }, [page, search]);
+  }, [page]);
 
   function setCurrentPage(page: number) {
     const url = new URL(window.location.toString());
     url.searchParams.set("page", String(page));
     window.history.pushState({}, "", url);
     setPage(page);
-  }
-
-  function setCurrentSize(size: number) {
-    const url = new URL(window.location.toString());
-    url.searchParams.set("size", String(size));
-    window.history.pushState({}, "", url);
-    setSize(size);
   }
 
   function setCurrentSearch(search: string) {
@@ -223,7 +165,6 @@ export function AttendeeList() {
 
   function goToFirstPage() {
     setCurrentPage(1);
-    setCurrentSize(2);
   }
 
   function goToLastPage() {
@@ -292,7 +233,24 @@ export function AttendeeList() {
         headers,
       })
       .then((response) => {
-        console.log("Response:", response.data);
+        // Create a Blob from the PDF data
+        const blob = new Blob([response.data], { type: "application/pdf" });
+
+        // Create a URL object representing the PDF blob
+        const pdfUrl = URL.createObjectURL(blob);
+
+        // Create a temporary link element (<a>) to trigger the download
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "document.pdf"; // Set the filename for the downloaded PDF
+        document.body.appendChild(link);
+
+        // Trigger a click event on the link to initiate the download
+        link.click();
+
+        // Cleanup: Remove the temporary link and revoke the URL object
+        document.body.removeChild(link);
+        URL.revokeObjectURL(pdfUrl);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -301,7 +259,7 @@ export function AttendeeList() {
 
   return (
     <div className="flex flex-col gap-4 overflow-x-auto">
-      <div className="flex gap-6 items-center space place-content-around">
+      <div className="flex gap-6 items-center space place-content-between">
         <h1 className="text-2xl font-bold text-gray-900">Casais</h1>
         <div className="px-3 w-72 py-1.5 border border-gray-400 rounded-lg flex items-center gap-3">
           <Search className="size-4 text-gray-500" />
@@ -364,7 +322,7 @@ export function AttendeeList() {
                   <TableCell>{casalData.enderecoNoiva}</TableCell>
 
                   <TableCell>
-                    {casalData.sexo === "FEMININO" ? (
+                    {casalData.id === 0 ? (
                       <span className="text-gray-400">Feminino</span>
                     ) : (
                       <span className="text-gray-400">Masculino</span>
@@ -407,8 +365,8 @@ export function AttendeeList() {
                 <IconButton onClick={goToFirstPage}>
                   <ChevronsLeft className="size-4" />
                 </IconButton>
-                <IconButton onClick={goToPreviousPage}>
-                  {/* <IconButton onClick={goToPreviousPage} disabled={page === 1}></IconButton> */}
+
+                <IconButton onClick={goToPreviousPage} disabled={page === 1}>
                   <ChevronLeft className="size-4" />
                 </IconButton>
                 <IconButton

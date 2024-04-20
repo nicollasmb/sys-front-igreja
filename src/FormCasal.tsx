@@ -69,7 +69,7 @@ export function FormCasal() {
       <div className="flex justify-center h-full ">
         <div className="isolate flex items-center justify-center bg-white sm:w-full md:w-1/2 ">
           <div className="w-auto">
-            <div className="flex md:justify-start sm:justify-start pt-12 pb-14">
+            <div className="flex md:justify-start sm:justify-start pt-12 pb-14 notebook:pb-10">
               <Stepper2 numberOfSteps={3} currentPage={0} />
             </div>
 

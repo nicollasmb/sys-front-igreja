@@ -10,13 +10,17 @@ interface Props {
   name: string;
   label: string;
   options: Option[];
+  additionalLabel?: string;
 }
 
-const SelectField: React.FC<Props> = ({ name, label, options }) => {
-  const [field, , helpers] = useField(name);
-  const [selectedOption, setSelectedOption] = useState(
-    field.value || options[0].value
-  );
+const SelectField: React.FC<Props> = ({
+  name,
+  label,
+  options,
+  additionalLabel,
+}) => {
+  const [field, meta, helpers] = useField(name);
+  const [selectedOption, setSelectedOption] = useState(field.value || "");
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +48,7 @@ const SelectField: React.FC<Props> = ({ name, label, options }) => {
     const selectedOptionLabel = options.find(
       (option) => option.value === field.value
     )?.label;
-    setSelectedOption(selectedOptionLabel || options[0].label);
+    setSelectedOption(selectedOptionLabel || "Selecione");
   }, [field.value, options]);
 
   const toggleDropdown = () => {
@@ -52,7 +56,7 @@ const SelectField: React.FC<Props> = ({ name, label, options }) => {
   };
 
   const handleSelectOption = (option: Option) => {
-    setSelectedOption(option.value);
+    setSelectedOption(option.label);
     helpers.setValue(option.value);
     setIsOpen(false);
     console.log("Selected option:", option);
@@ -62,12 +66,18 @@ const SelectField: React.FC<Props> = ({ name, label, options }) => {
     <div className="" ref={selectRef}>
       <div className="text-sm font-medium leading-6 text-gray-900 mb-2">
         {label}
+        <br />
+        {additionalLabel && (
+          <span className="md:hidden text-xs text-gray-600 -mt-2">
+            ({additionalLabel})
+          </span>
+        )}
       </div>
       <div className="flex items-center justify-between">
         <button
-          className="flex w-full border-r-0 border-l-0 border-t-0 border-1 transition duration-300
-          hover:border-gray-950 hover:bg-slate-50 border-transparent focus:border-gray-950 
-          focus:ring-0 border-gray-300 py-2 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6 items-center"
+          className={`flex w-full border-transparent rounded-md bg-gray-50 transition duration-300 hover:bg-slate-50 py-2 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6 items-center ${
+            meta.touched && meta.error ? "border border-red-800" : ""
+          }`}
           onClick={toggleDropdown}
         >
           <span className="ml-3">{selectedOption}</span>
@@ -98,6 +108,11 @@ const SelectField: React.FC<Props> = ({ name, label, options }) => {
           </li>
         ))}
       </ul>
+
+      {/* Conditionally render error message */}
+      {meta.touched && meta.error && (
+        <span className="text-sm text-red-700 mt-1">{meta.error}</span>
+      )}
     </div>
   );
 };
