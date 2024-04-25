@@ -37,15 +37,13 @@ export function InputField({
                 {...props}
                 autoComplete="organization"
                 placeholder={placeholder}
-                className={`block w-full border-r-0 border-l-0 border-t-0 border-1 bg-gray-50 rounded transition duration-300
-                hover:border-gray-950 hover:bg-slate-50 border-transparent focus:border-gray-950 
-                focus:ring-0 border-gray-300 py-2 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6 
-                ${meta.touched && meta.error ? "border-red-800" : ""}`}
+                className={`block w-full rounded-md border-0 hover:bg-slate-50 transition duration-300 focus:bg-white text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-marromclaro sm:text-sm sm:leading-6
+                ${meta.touched && meta.error ? "ring-1 ring-red-800" : ""}`}
                 minLength={minLength}
                 maxLength={maxLength}
               />
               {meta.touched && meta.error && (
-                <span className="text-sm text-red-700 absolute mt-1">
+                <span className="sm:text-xs md:text-sm text-red-700 absolute mt-1">
                   {meta.error}
                 </span>
               )}

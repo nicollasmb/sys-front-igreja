@@ -1,12 +1,13 @@
 import { Formik, Form, FormikHelpers } from "formik";
 import axios from "axios";
-import { InputField } from "./components/form/input-field";
-import Stepper2 from "./components/form/stepper";
-import { Header2 } from "./components/header2";
-import SelectField from "./components/combo/selector";
+import { InputField } from "../components/form/input-field";
+import Stepper2 from "../components/form/stepper";
+import { Header2 } from "../components/header2";
+import SelectField from "../components/combo/select-options";
 import { useNavigate } from "react-router-dom";
 
 import * as Yup from "yup";
+import { DateInputField } from "../components/form/date-input-field";
 
 interface Values {
   sexo: string;
@@ -55,7 +56,9 @@ export function FormNoivo() {
       if (response.status === 201) {
         console.log(response.data);
         console.log(response.data.id);
-        navigate(`/formularioCursoDeNoivos/noiva?sn21s=${response.data.id}`);
+        navigate(
+          `/formularioCursoDeNoivos/noiva?sn21s=${response.data.id}&nomeNoivo=${values.nome}`
+        );
       } else {
         console.error("Failed to submit form:", response.statusText);
       }
@@ -69,7 +72,12 @@ export function FormNoivo() {
   const validationSchema = Yup.object().shape({
     nome: Yup.string().required("Campo obrigatório"),
     dataNascimento: Yup.string().required("Campo obrigatório"),
-    telefone: Yup.string().required("Campo obrigatório"),
+    telefone: Yup.string()
+      .required("Campo obrigatório")
+      .test("is-number", "Somente números", (value) => {
+        // Check if the value is a number
+        return /^\d+$/.test(value);
+      }),
     endereco: Yup.string().required("Campo obrigatório"),
     comunidadeFrequenta: Yup.string().required("Campo obrigatório"),
     sacramento: Yup.boolean().required("Campo obrigatório"),
@@ -80,13 +88,13 @@ export function FormNoivo() {
     <div>
       <Header2 />
       <div className="flex justify-center h-full ">
-        <div className="isolate flex items-center justify-center bg-white sm:w-full md:w-1/2 ">
+        <div className="isolate flex items-center justify-center bg-brancofundo sm:w-full md:w-1/2 ">
           <div className="w-auto">
-            <div className="flex md:justify-start sm:justify-start pt-12 pb-12">
+            <div className="flex md:justify-start  sm:pt-10 md:pt-12 pb-12 ">
               <Stepper2 numberOfSteps={3} currentPage={2} />
             </div>
 
-            <div className="mx-auto max-w-xl text-center md:text-left">
+            <div className="mx-auto max-w-xl text-center md:text-left sm:-mt-4">
               <h2 className="2xl:text-4xl notebook:mb-4 font-bold tracking-tight text-gray-900 sm:text-4xl">
                 Dados do Noivo
               </h2>
@@ -110,7 +118,7 @@ export function FormNoivo() {
               onSubmit={handleSubmit}
             >
               <Form>
-                <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-1 border border-gray-300 rounded-md p-8">
+                <div className="bg-[#fdfdfc] grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-1 sm:p-4 border border-gray-300 rounded-md md:p-8">
                   <InputField
                     label="Nome Completo"
                     id="nome"
@@ -120,13 +128,12 @@ export function FormNoivo() {
                   />
 
                   <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
-                    <InputField
+                    <DateInputField
                       label="Data de Nascimento"
                       id="dataNascimento"
+                      type="text"
                       name="dataNascimento"
-                      type="date"
-                      min="1930-01-01"
-                      max="2024-04-30"
+                      placeholder="DD/MM/AAAA"
                     />
                     <InputField
                       label="Telefone"
@@ -134,7 +141,6 @@ export function FormNoivo() {
                       name="telefone"
                       type="tel"
                       placeholder="(42) 99999-9999"
-                      minLength={8}
                       maxLength={11}
                     />
                   </div>
@@ -165,14 +171,14 @@ export function FormNoivo() {
                       options={religiaoOptions}
                     />
                     <span className="hidden md:inline-block  text-xs text-gray-600 -mt-2">
-                      (Batismo, Comunhão e Crisma)
+                      * Batismo, Comunhão e Crisma
                     </span>
                   </div>
                 </div>
-                <div className="mt-8 sm:mt-8 w-full md:w-1/3 ml-auto notebook:mb-6 sm:mb-8">
+                <div className="mt-8 sm:mt-12 w-full md:w-1/3 ml-auto notebook:mb-6 sm:mb-12">
                   <button
                     type="submit"
-                    className="block w-full rounded-md bg-marromclaro px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    className="block w-full rounded-md bg-marromclaro px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-white hover:text-gray-700 transition duration-800 hover:border-2 hover:border-marromclaro focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
                   >
                     Avançar
                   </button>

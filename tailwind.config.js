@@ -5,6 +5,7 @@ export default {
     extend: {
       colors: {
         marromclaro: "#998A74",
+        brancofundo: "#fbfaf9",
       },
     },
     screens: {

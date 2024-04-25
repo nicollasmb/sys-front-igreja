@@ -59,7 +59,6 @@ const SelectField: React.FC<Props> = ({
     setSelectedOption(option.label);
     helpers.setValue(option.value);
     setIsOpen(false);
-    console.log("Selected option:", option);
   };
 
   return (
@@ -75,16 +74,14 @@ const SelectField: React.FC<Props> = ({
       </div>
       <div className="flex items-center justify-between">
         <button
-          className={`flex w-full border-transparent rounded-md bg-gray-50 transition duration-300 hover:bg-slate-50 py-2 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6 items-center ${
-            meta.touched && meta.error ? "border border-red-800" : ""
-          }`}
+          className={`flex py-2 w-full rounded-md border-0 hover:bg-slate-50 transition duration-100 focus:bg-white text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-marromclaro sm:text-sm sm:leading-6
+          ${meta.touched && meta.error ? "ring-1 ring-red-800" : ""}`}
           onClick={toggleDropdown}
+          type="button"
         >
           <span className="ml-3">{selectedOption}</span>
           <svg
-            className={`fill-current h-4 w-4 ml-auto ${
-              isOpen ? "rotate-180" : ""
-            }`}
+            className={`h-4 w-4 ml-auto mt-1 ${isOpen ? "rotate-180" : ""}`}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
           >
